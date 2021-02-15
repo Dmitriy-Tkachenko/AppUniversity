@@ -3,6 +3,9 @@ package com.university.studytime.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+// POJO класс RegisterModel используется для получения ответа с сервера данных в формате JSON.
+// Каждая переменная аннотированная @SerializedName
+// и имя в параметре аннотации в точности такое же, как в JSON ответе.
 public class RegisterModel {
     @SerializedName("full_name")
     @Expose
@@ -15,6 +18,10 @@ public class RegisterModel {
     @SerializedName("password")
     @Expose
     private String password;
+
+    @SerializedName("confirm_password")
+    @Expose
+    private String confirmPassword;
 
     @SerializedName("message")
     @Expose
@@ -32,18 +39,6 @@ public class RegisterModel {
         this.isSuccess = isSuccess;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -51,27 +46,4 @@ public class RegisterModel {
     public int getIsSuccess() {
         return isSuccess;
     }
-
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setIsSuccess(int isSuccess) {
-        this.isSuccess = isSuccess;
-    }
-
-
 }

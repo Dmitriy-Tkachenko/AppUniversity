@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//Данный класс необходим для работы ViewPager с фрагментами и предоставления данных
 public class TabAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> fragmentList = new ArrayList<>();
     private final List<String> fragmentTitleList = new ArrayList<>();

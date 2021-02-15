@@ -1,9 +1,19 @@
 package com.university.studytime.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class TimetableModel {
+// POJO класс TimetableModel используется для получения ответа с сервера данных в формате JSON.
+// Каждая переменная аннотированная @SerializedName
+// и имя в параметре аннотации в точности такое же, как в JSON ответе.
+public class TimetableModel implements Parcelable {
+
+    @SerializedName("id")
+    @Expose
+    private int id;
 
     @SerializedName("day_name")
     @Expose
@@ -37,25 +47,57 @@ public class TimetableModel {
     @Expose
     private String fullName;
 
-    @SerializedName("message")
-    @Expose
-    private String message;
-
     @SerializedName("isSuccess")
     @Expose
     private int isSuccess;
 
-    public TimetableModel(String dayName, String startTime, String endTime, String audience, String numberSeats, String discipline, String lessonType, String fullName, String message, int isSuccess) {
-        this.dayName = dayName;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.audience = audience;
-        this.numberSeats = numberSeats;
-        this.discipline = discipline;
-        this.lessonType = lessonType;
-        this.fullName = fullName;
-        this.message = message;
-        this.isSuccess = isSuccess;
+    protected TimetableModel(Parcel in) {
+        id = in.readInt();
+        dayName = in.readString();
+        startTime = in.readString();
+        endTime = in.readString();
+        audience = in.readString();
+        numberSeats = in.readString();
+        discipline = in.readString();
+        lessonType = in.readString();
+        fullName = in.readString();
+        isSuccess = in.readInt();
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<TimetableModel> CREATOR = new Parcelable.Creator<TimetableModel>() {
+        @Override
+        public TimetableModel createFromParcel(Parcel in) {
+            return new TimetableModel(in);
+        }
+
+        @Override
+        public TimetableModel[] newArray(int size) {
+            return new TimetableModel[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(dayName);
+        dest.writeString(startTime);
+        dest.writeString(endTime);
+        dest.writeString(audience);
+        dest.writeString(numberSeats);
+        dest.writeString(discipline);
+        dest.writeString(lessonType);
+        dest.writeString(fullName);
+        dest.writeInt(isSuccess);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getDayName() {
@@ -74,10 +116,6 @@ public class TimetableModel {
         return audience;
     }
 
-    public String getNumberSeats() {
-        return numberSeats;
-    }
-
     public String getDiscipline() {
         return discipline;
     }
@@ -90,52 +128,7 @@ public class TimetableModel {
         return fullName;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
     public int getIsSuccess() {
         return isSuccess;
-    }
-
-
-    public void setDayName(String dayName) {
-        this.dayName = dayName;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-
-    public void setAudience(String audience) {
-        this.audience = audience;
-    }
-
-    public void setNumberSeats(String numberSeats) {
-        this.numberSeats = numberSeats;
-    }
-
-    public void setDiscipline(String discipline) {
-        this.discipline = discipline;
-    }
-
-    public void setLessonType(String lessonType) {
-        this.lessonType = lessonType;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setIsSuccess(int isSuccess) {
-        this.isSuccess = isSuccess;
     }
 }

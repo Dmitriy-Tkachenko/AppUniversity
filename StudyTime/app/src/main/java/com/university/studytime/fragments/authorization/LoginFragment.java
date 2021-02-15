@@ -1,4 +1,4 @@
-package com.university.studytime.fragments;
+package com.university.studytime.fragments.authorization;
 
 import android.content.Context;
 import android.content.Intent;
@@ -51,7 +51,7 @@ public class LoginFragment extends Fragment {
 
         return rootView;
     }
-
+    // Проверка введенных данных на корректность
     private void validateUserData() {
         final String userLogin = login.getText().toString();
         final String userPassword = password.getText().toString();
@@ -72,7 +72,7 @@ public class LoginFragment extends Fragment {
 
         loginUser(userLogin, userPassword);
     }
-
+    // Проверка роли пользователя и предоставление ему соответствующего активити в зависимости от роли
     private void loginUser(String userLogin, String userPassword) {
         Api api = ApiClient.getClient().create(Api.class);
         Call<LoginModel> login = api.login(userLogin, userPassword);
@@ -80,21 +80,23 @@ public class LoginFragment extends Fragment {
         login.enqueue(new Callback<LoginModel>() {
             @Override
             public void onResponse(@NonNull Call<LoginModel> call, @NonNull Response<LoginModel> response) {
-                if (Objects.requireNonNull(response.body()).getIsSuccess() == 1) {
-                    if (response.body().getRole() == 1) {
-                        startActivity(new Intent(getActivity(), UserActivity.class));
-                        Objects.requireNonNull(getActivity()).finish();
+                if (response.isSuccessful() && response.body() != null) {
+                    if (Objects.requireNonNull(response.body()).getIsSuccess() == 1) {
+                        if (response.body().getRole() == 1) {
+                            startActivity(new Intent(getActivity(), UserActivity.class));
+                            Objects.requireNonNull(getActivity()).finish();
+                        }
+                        if (response.body().getRole() == 2) {
+                            startActivity(new Intent(getActivity(), ModeratorActivity.class));
+                            Objects.requireNonNull(getActivity()).finish();
+                        }
+                        if (response.body().getRole() == 3) {
+                            startActivity(new Intent(getActivity(), AdministratorActivity.class));
+                            Objects.requireNonNull(getActivity()).finish();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                    if (response.body().getRole() == 2) {
-                        startActivity(new Intent(getActivity(), ModeratorActivity.class));
-                        Objects.requireNonNull(getActivity()).finish();
-                    }
-                    if (response.body().getRole() == 3) {
-                        startActivity(new Intent(getActivity(), AdministratorActivity.class));
-                        Objects.requireNonNull(getActivity()).finish();
-                    }
-                } else {
-                    Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 

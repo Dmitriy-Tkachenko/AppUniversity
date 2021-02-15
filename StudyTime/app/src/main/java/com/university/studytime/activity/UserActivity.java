@@ -1,68 +1,178 @@
 package com.university.studytime.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.university.studytime.R;
-import com.university.studytime.fragments.MondayFragment;
+import com.university.studytime.api.Api;
+import com.university.studytime.api.ApiClient;
+import com.university.studytime.fragments.timetable.FridayFragment;
+import com.university.studytime.fragments.timetable.MondayFragment;
+import com.university.studytime.fragments.timetable.SaturdayFragment;
 import com.university.studytime.fragments.TabAdapter;
-import com.university.studytime.fragments.TuesdayFragment;
+import com.university.studytime.fragments.timetable.ThursdayFragment;
+import com.university.studytime.fragments.timetable.TuesdayFragment;
+import com.university.studytime.fragments.timetable.WednesdayFragment;
+import com.university.studytime.models.SuccessModel;
+import com.university.studytime.models.TimetableModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserActivity extends AppCompatActivity {
+    private List<TimetableModel> timetableList, mondayList, tuesdayList, wednesdayList, thursdayList, fridayList, saturdayList;
     private String codeGroup;
-    private TabAdapter adapter;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private TextView requestCode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(5);
         tabLayout = findViewById(R.id.tabLayout);
-        /*adapter.addFragment(new MondayFragment(), "Понедельник");
-        adapter.addFragment(new TuesdayFragment(), "Вторник");
-        adapter.addFragment(new TuesdayFragment(), "Среда");
-        adapter.addFragment(new TuesdayFragment(), "Четверг");
-        adapter.addFragment(new TuesdayFragment(), "Пятница");
-        adapter.addFragment(new TuesdayFragment(), "Суббота");*/
-
+        requestCode = findViewById(R.id.request_code);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_menu, menu);
+        getMenuInflater().inflate(R.menu.options_menu_user, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
+        //Поле поиска номера группы
         final SearchView searchView = (SearchView) menuItem.getActionView();
 
-        searchView.setMaxWidth(Integer.MAX_VALUE); //Без этого поле ввода лишь на ~2/3 экрана в портретном режиме, а в ланшафтном на ~1/3
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        // Обработка ввода данных в поле поиска номера группы
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                adapter.addFragment(new MondayFragment(codeGroup), "Понедельник");
-                adapter.addFragment(new TuesdayFragment(codeGroup), "Вторник");
-                adapter.addFragment(new TuesdayFragment(codeGroup), "Среда");
-                adapter.addFragment(new TuesdayFragment(codeGroup), "Четверг");
-                adapter.addFragment(new TuesdayFragment(codeGroup), "Пятница");
-                adapter.addFragment(new TuesdayFragment(codeGroup), "Суббота");
-                viewPager.setAdapter(adapter);
+                existGroupCode(codeGroup);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter = new TabAdapter(getSupportFragmentManager());
-                tabLayout.setupWithViewPager(viewPager);
                 codeGroup = newText;
                 return false;
             }
         });
         return true;
+    }
+
+    // Кнопка опций
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Выход из аккаунта
+        if (item.getItemId() == R.id.more_vert) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //Проверка базы данных на наличи введенного номера группы
+    private void existGroupCode(String codeGroup) {
+        Api api = ApiClient.getClient().create(Api.class);
+        Call<SuccessModel> existGroupCode = api.existGroupCode(codeGroup);
+        existGroupCode.enqueue(new Callback<SuccessModel>() {
+            @Override
+            public void onResponse(@NonNull Call<SuccessModel> call, @NonNull Response<SuccessModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getIsSuccess() == 1) {
+                        requestCode.setVisibility(View.GONE);
+                        timetable();
+                    } else {
+                        Toast.makeText(getBaseContext(), "Группа не найдена!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<SuccessModel> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    //Получение рассписания группы
+    private void timetable() {
+        Api api = ApiClient.getClient().create(Api.class);
+        Call<List<TimetableModel>> existGroupCode = api.userTimetable(codeGroup);
+
+        existGroupCode.enqueue(new Callback<List<TimetableModel>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<TimetableModel>> call, @NonNull Response<List<TimetableModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    timetableList = new ArrayList<>();
+                    mondayList = new ArrayList<>();
+                    tuesdayList = new ArrayList<>();
+                    wednesdayList = new ArrayList<>();
+                    thursdayList = new ArrayList<>();
+                    fridayList = new ArrayList<>();
+                    saturdayList = new ArrayList<>();
+                    timetableList = response.body();
+
+                    //Распределение расписания в списки по дню недели
+                    for (int i = 0; i < timetableList.size(); i++) {
+                        switch (timetableList.get(i).getDayName()) {
+                            case "Понедельник":
+                                mondayList.add(timetableList.get(i));
+                                break;
+                            case "Вторник":
+                                tuesdayList.add(timetableList.get(i));
+                                break;
+                            case "Среда":
+                                wednesdayList.add(timetableList.get(i));
+                                break;
+                            case "Четверг":
+                                thursdayList.add(timetableList.get(i));
+                                break;
+                            case "Пятница":
+                                fridayList.add(timetableList.get(i));
+                                break;
+                            case "Суббота":
+                                saturdayList.add(timetableList.get(i));
+                                break;
+                        }
+                    }
+                    createFragments();
+                } else {
+                    Toast.makeText(getBaseContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<TimetableModel>> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    //Создание вкладок с соответствующим днем недели
+    private void createFragments() {
+        TabAdapter tabA = new TabAdapter(getSupportFragmentManager());
+        tabA.addFragment(MondayFragment.newInstance(mondayList), "Понедельник");
+        tabA.addFragment(TuesdayFragment.newInstance(tuesdayList), "Вторник");
+        tabA.addFragment(WednesdayFragment.newInstance(wednesdayList), "Среда");
+        tabA.addFragment(ThursdayFragment.newInstance(thursdayList), "Четверг");
+        tabA.addFragment(FridayFragment.newInstance(fridayList), "Пятница");
+        tabA.addFragment(SaturdayFragment.newInstance(saturdayList), "Суббота");
+        viewPager.setAdapter(tabA);
+        tabLayout.setupWithViewPager(viewPager);
     }
 }

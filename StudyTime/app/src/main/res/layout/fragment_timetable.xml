@@ -2,51 +2,70 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:backgroundTint="#FAFAFA"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginBottom="1dp"
+        app:cardElevation="1dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:padding="6dp">
+
+            <ImageView
+                android:id="@+id/time"
+                android:layout_width="80dp"
+                android:layout_height="25dp"
+                android:layout_below="@id/start_time"
+                android:layout_marginTop="0dp"
+                android:src="@drawable/ic_access_time" />
 
             <TextView
                 android:id="@+id/start_time"
-                android:gravity="center"
-                android:textSize="20sp"
                 android:layout_width="80dp"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="center|bottom"
                 android:padding="4dp"
-                android:text="9:00" />
+                android:text="9:00"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/end_time"
-                android:gravity="center"
-                android:textSize="20sp"
                 android:layout_width="80dp"
-                android:layout_height="50dp"
-                android:layout_below="@id/start_time"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/time"
+                android:gravity="center|top"
                 android:padding="4dp"
-                android:text="10:30" />
+                android:text="10:30"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/discipline"
-                android:layout_width="match_parent"
+                android:layout_width="213dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:layout_marginEnd="62dp"
+                android:layout_toStartOf="@+id/btnDeleteCard"
                 android:layout_toEndOf="@id/start_time"
                 android:text="Сети и телекоммуникации"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                android:textColor="#000000" />
+                android:textColor="#000000"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/teacher"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/discipline"
                 android:layout_marginStart="5dp"
@@ -67,6 +86,7 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:text="Лаб. работа"
+                android:textColor="@android:color/white"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse"
                 android:textStyle="bold" />
 
@@ -81,6 +101,24 @@
                 android:text="Н507"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnDeleteCard"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_close_white"
+                android:background="@drawable/btn_close_body"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"/>
+
+            <View
+                android:id="@+id/line"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/start_time"
+                android:layout_alignTop="@+id/discipline"
+                android:layout_alignBottom="@+id/audience"
+                android:background="#EEEEEE" />
 
         </RelativeLayout>
 

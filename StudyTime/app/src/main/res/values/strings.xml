@@ -1,12 +1,15 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Университет</string>
     <string name="login">Логин</string>
     <string name="full_name">Ф.И.О.</string>
     <string name="password">Пароль</string>
+    <string name="confirm_password">Повторите пароль</string>
     <string name="sign_up">Зарегистрироваться</string>
     <string name="login_btn">Войти</string>
-    <string name="reg_txt">Еще нет аккаунта? <u>Зарегистрируйтесь</u></string>
-    <string name="login_txt">Уже есть аккаунт? <u>Войдите</u></string>
     <string name="search_title">Поиск</string>
-    <string name="search_hint">Номер группы</string>>
+    <string name="search_hint">Номер группы</string>
+    <string name="log_out">Выйти из аккаунта</string>
+    <string name="request_code">Введите номер группы</string>
+    <string name="activity_moder">Функционал модератора в разарботке!</string>
+    <string name="activity_admin">Функционал администратора в разработке!</string>
 </resources>

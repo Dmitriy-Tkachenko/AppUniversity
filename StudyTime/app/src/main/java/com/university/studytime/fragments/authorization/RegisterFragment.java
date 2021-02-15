@@ -1,4 +1,4 @@
-package com.university.studytime.fragments;
+package com.university.studytime.fragments.authorization;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RegisterFragment extends Fragment {
-    private EditText fullName, login, password;
+    private EditText fullName, login, password, conFirmPassword;
     private Vibrator vibrator;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +39,7 @@ public class RegisterFragment extends Fragment {
         fullName = rootView.findViewById(R.id.regFullName);
         login = rootView.findViewById(R.id.regLogin);
         password = rootView.findViewById(R.id.regPassword);
+        conFirmPassword = rootView.findViewById(R.id.confirmPassword);
         vibrator = (Vibrator) Objects.requireNonNull(getActivity()).getSystemService(Context.VIBRATOR_SERVICE);
 
         regBtn.setOnClickListener(new View.OnClickListener() {
@@ -49,11 +50,12 @@ public class RegisterFragment extends Fragment {
         });
         return rootView;
     }
-
+    // Проверка введенных данных на корректность
     private void validateUserData() {
         final String reg_full_name = fullName.getText().toString();
         final String reg_login = login.getText().toString();
         final String reg_password = password.getText().toString();
+        final String reg_confirm_password = conFirmPassword.getText().toString();
 
         if (TextUtils.isEmpty(reg_full_name)) {
             fullName.setError("Поле не может быть пустым");
@@ -70,7 +72,7 @@ public class RegisterFragment extends Fragment {
         }
 
         if (TextUtils.isEmpty(reg_login)) {
-            login.setError("Не может быть пустым");
+            login.setError("Поле не может быть пустым");
             login.requestFocus();
             vibrator.vibrate(100);
             return;
@@ -90,9 +92,19 @@ public class RegisterFragment extends Fragment {
             return;
         }
 
+        if (!reg_password.equals(reg_confirm_password)) {
+            conFirmPassword.setError("Пароли не совпадают");
+            password.setError("Пароли не совпадают");
+            conFirmPassword.requestFocus();
+            password.requestFocus();
+            vibrator.vibrate(100);
+            return;
+        }
+
         registerUser(reg_full_name, reg_login, reg_password);
     }
 
+    // Передача в базу данных введенных данных для регистрации
     private void registerUser(String user_full_name, String user_login, String user_password) {
         Api api = ApiClient.getClient().create(Api.class);
         Call<RegisterModel> register = api.register(user_full_name, user_login, user_password);
@@ -100,12 +112,14 @@ public class RegisterFragment extends Fragment {
         register.enqueue(new Callback<RegisterModel>() {
             @Override
             public void onResponse(@NonNull Call<RegisterModel> call, @NonNull Response<RegisterModel> response) {
-                if (Objects.requireNonNull(response.body()).getIsSuccess() == 1) {
-                    Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getActivity(), UserActivity.class));
-                    Objects.requireNonNull(getActivity()).finish();
-                } else {
-                    Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful() && response.body() != null) {
+                    if (response.body().getIsSuccess() == 1) {
+                        Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getActivity(), UserActivity.class));
+                        Objects.requireNonNull(getActivity()).finish();
+                    } else {
+                        Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 

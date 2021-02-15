@@ -3,6 +3,9 @@ package com.university.studytime.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+// POJO класс LoginModel используется для получения ответа с сервера данных в формате JSON.
+// Каждая переменная аннотированная @SerializedName
+// и имя в параметре аннотации в точности такое же, как в JSON ответе.
 public class LoginModel {
     @SerializedName("login")
     @Expose
@@ -32,14 +35,6 @@ public class LoginModel {
         this.isSuccess = isSuccess;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -50,26 +45,5 @@ public class LoginModel {
 
     public int getIsSuccess() {
         return isSuccess;
-    }
-
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
-    }
-
-    public void setIsSuccess(int isSuccess) {
-        this.isSuccess = isSuccess;
     }
 }
